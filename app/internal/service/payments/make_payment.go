@@ -6,15 +6,15 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/laterius/service_architecture_hw3/app/internal/service"
 	"io"
 	"log"
 	"net/http"
-	"os"
 )
 
 // MakePayment sends request to payment service to make payment
 func MakePayment(orderId uuid.UUID, amount int) error {
-	endpoint := fmt.Sprintf("%s/makePayment", os.Getenv("PAYMENTS_HOST"))
+	endpoint := fmt.Sprintf("%s/makePayment", service.Host)
 	data := map[string]interface{}{
 		"order_id": orderId,
 		"amount":   amount,

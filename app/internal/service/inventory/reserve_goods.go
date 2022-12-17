@@ -6,15 +6,15 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/laterius/service_architecture_hw3/app/internal/service"
 	"io"
 	"log"
 	"net/http"
-	"os"
 )
 
 // ReserveGoods sends request inventory service to reserve goods
 func ReserveGoods(orderId uuid.UUID, goodIds []uuid.UUID) ([]uuid.UUID, error) {
-	endpoint := fmt.Sprintf("%s/reserveGoods", os.Getenv("INVENTORY_HOST"))
+	endpoint := fmt.Sprintf("%s/reserveGoods", service.Host)
 	data := map[string]interface{}{
 		"order_id":  orderId,
 		"goods_ids": goodIds,

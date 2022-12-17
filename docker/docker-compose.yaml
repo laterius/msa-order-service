@@ -1,6 +1,6 @@
 version: '3'
 services:
-  app:
+  app-order:
     container_name: app-order
     image: 34234247632/order-service:v2.0
     networks:
@@ -9,6 +9,8 @@ services:
     entrypoint: /entrypoint.sh
     ports:
       - "8000:8000"
+    depends_on:
+      - "db"
     environment:
       DB_HOST: db
       DB_PASSWORD: example
@@ -20,7 +22,9 @@ services:
     restart: always
     entrypoint: /entrypoint.sh
     ports:
-      - "8001:8001"
+      - "8000:8001"
+    depends_on:
+      - "app-order"
     environment:
       DB_HOST: db
       DB_PASSWORD: example
@@ -32,7 +36,9 @@ services:
     restart: always
     entrypoint: /entrypoint.sh
     ports:
-      - "8000:8000"
+      - "8000:8002"
+    depends_on:
+      - "app-storage"
     environment:
       DB_HOST: db
       DB_PASSWORD: example
@@ -44,7 +50,9 @@ services:
     restart: always
     entrypoint: /entrypoint.sh
     ports:
-      - "8000:8000"
+      - "8000:8003"
+    depends_on:
+      - "app-delivery"
     environment:
       DB_HOST: db
       DB_PASSWORD: example

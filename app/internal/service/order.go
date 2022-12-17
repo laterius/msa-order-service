@@ -5,6 +5,8 @@ import (
 	"gorm.io/gorm"
 )
 
+const Host = "http://localhost:8000"
+
 type Service struct {
 	db *gorm.DB
 }

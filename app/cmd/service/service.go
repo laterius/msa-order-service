@@ -36,7 +36,7 @@ func main() {
 	server := gin.Default()
 
 	//Handlers
-	server.POST("/", api.CreateOrderHandler(newService))
+	server.POST("/order", api.CreateOrderHandler(newService))
 	server.GET("/probe/live", transport.RespondOk())
 	server.GET("/probe/ready", transport.RespondOk())
 

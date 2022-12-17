@@ -6,15 +6,15 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/laterius/service_architecture_hw3/app/internal/service"
 	"io"
 	"log"
 	"net/http"
-	"os"
 )
 
 // CancelPayment sends request to payment service to cancel payment
 func CancelPayment(orderId uuid.UUID) error {
-	endpoint := fmt.Sprintf("%s/cancelPayment", os.Getenv("PAYMENTS_HOST"))
+	endpoint := fmt.Sprintf("%s/cancelPayment", service.Host)
 	data := map[string]interface{}{
 		"order_id": orderId,
 	}

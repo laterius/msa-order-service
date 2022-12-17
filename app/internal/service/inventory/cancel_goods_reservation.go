@@ -6,15 +6,15 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/laterius/service_architecture_hw3/app/internal/service"
 	"io"
 	"log"
 	"net/http"
-	"os"
 )
 
 // CancelGoodsReservation sends request to cancel reservation
 func CancelGoodsReservation(orderId uuid.UUID) error {
-	endpoint := fmt.Sprintf("%s/cancelGoodsReservation", os.Getenv("INVENTORY_HOST"))
+	endpoint := fmt.Sprintf("%s/cancelGoodsReservation", service.Host)
 	data := map[string]interface{}{
 		"order_id": orderId,
 	}
