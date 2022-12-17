@@ -14,7 +14,7 @@ import (
 
 // MakePayment sends request to payment service to make payment
 func MakePayment(orderId uuid.UUID, amount int) error {
-	endpoint := fmt.Sprintf("%s/makePayment", service.Host)
+	endpoint := fmt.Sprintf("%s/makePayment", service.PaymentHost)
 	data := map[string]interface{}{
 		"order_id": orderId,
 		"amount":   amount,

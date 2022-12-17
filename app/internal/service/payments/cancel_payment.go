@@ -14,7 +14,7 @@ import (
 
 // CancelPayment sends request to payment service to cancel payment
 func CancelPayment(orderId uuid.UUID) error {
-	endpoint := fmt.Sprintf("%s/cancelPayment", service.Host)
+	endpoint := fmt.Sprintf("%s/cancelPayment", service.PaymentHost)
 	data := map[string]interface{}{
 		"order_id": orderId,
 	}

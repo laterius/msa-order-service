@@ -14,7 +14,7 @@ import (
 
 // ReserveCourier sends request to shipment service to reserve courier
 func ReserveCourier(orderId uuid.UUID) error {
-	endpoint := fmt.Sprintf("%s/reserveCourier", service.Host)
+	endpoint := fmt.Sprintf("%s/reserveCourier", service.DeliveryHost)
 	data := map[string]interface{}{
 		"order_id": orderId,
 	}

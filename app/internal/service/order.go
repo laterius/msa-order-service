@@ -5,7 +5,9 @@ import (
 	"gorm.io/gorm"
 )
 
-const Host = "http://localhost:8000"
+const StorageHost = "http://localhost:8001"
+const DeliveryHost = "http://localhost:8002"
+const PaymentHost = "http://localhost:8003"
 
 type Service struct {
 	db *gorm.DB

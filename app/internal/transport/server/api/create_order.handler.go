@@ -65,7 +65,12 @@ func CreateOrderHandler(service s.Service) func(c *gin.Context) {
 				_, err := inventory.ReserveGoods(o.Id, goodIds)
 
 				if err != nil {
-					return err
+					log.Println("inventory reservation failed")
+					c.JSON(http.StatusBadRequest, gin.H{
+						"success": false,
+						"message": err.Error(),
+						"data":    gin.H{},
+					})
 				}
 
 				log.Println("inventory: end body reservation.")

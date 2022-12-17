@@ -14,7 +14,7 @@ import (
 
 // CancelCourierReservation sends request to shipment service to cancel courier reservation
 func CancelCourierReservation(orderId uuid.UUID) error {
-	endpoint := fmt.Sprintf("%s/cancelCourierReservation", service.Host)
+	endpoint := fmt.Sprintf("%s/cancelCourierReservation", service.DeliveryHost)
 	data := map[string]interface{}{
 		"order_id": orderId,
 	}

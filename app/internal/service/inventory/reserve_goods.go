@@ -14,7 +14,7 @@ import (
 
 // ReserveGoods sends request inventory service to reserve goods
 func ReserveGoods(orderId uuid.UUID, goodIds []uuid.UUID) ([]uuid.UUID, error) {
-	endpoint := fmt.Sprintf("%s/reserveGoods", service.Host)
+	endpoint := fmt.Sprintf("%s/reserveGoods", service.StorageHost)
 	data := map[string]interface{}{
 		"order_id":  orderId,
 		"goods_ids": goodIds,

@@ -14,7 +14,7 @@ import (
 
 // CancelGoodsReservation sends request to cancel reservation
 func CancelGoodsReservation(orderId uuid.UUID) error {
-	endpoint := fmt.Sprintf("%s/cancelGoodsReservation", service.Host)
+	endpoint := fmt.Sprintf("%s/cancelGoodsReservation", service.StorageHost)
 	data := map[string]interface{}{
 		"order_id": orderId,
 	}
