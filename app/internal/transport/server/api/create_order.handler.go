@@ -2,8 +2,9 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/laterius/service_architecture_hw3/app/internal/saga"
-	"github.com/laterius/service_architecture_hw3/app/internal/service"
+	s "github.com/laterius/service_architecture_hw3/app/internal/service"
 	"github.com/laterius/service_architecture_hw3/app/internal/service/inventory"
 	"github.com/laterius/service_architecture_hw3/app/internal/service/payments"
 	"github.com/laterius/service_architecture_hw3/app/internal/service/shipment"
@@ -12,14 +13,9 @@ import (
 )
 
 // CreateOrderHandler handles request to create order
-func CreateOrderHandler(service service.Service) func(c *gin.Context) {
-	type Good struct {
-		ID    int `json:"id"`
-		Price int `json:"price"`
-	}
-
+func CreateOrderHandler(service s.Service) func(c *gin.Context) {
 	type Body struct {
-		Goods []Good
+		Goods []s.Good
 	}
 
 	return func(c *gin.Context) {
@@ -35,10 +31,10 @@ func CreateOrderHandler(service service.Service) func(c *gin.Context) {
 			return
 		}
 
-		var goodIds []int
+		var goodIds []uuid.UUID
 		amount := 0
 		for _, good := range body.Goods {
-			amount += good.Price
+			amount += good.Amount
 			goodIds = append(goodIds, good.ID)
 		}
 
@@ -59,9 +55,60 @@ func CreateOrderHandler(service service.Service) func(c *gin.Context) {
 
 		log.Println("order created")
 
-		s := saga.Saga{}
-		s.SetName("order creation")
-		s.AddStep(saga.Step{
+		newSaga := saga.Saga{}
+		newSaga.SetName("order creation")
+
+		newSaga.AddStep(saga.Step{
+			Name: "reserve body",
+			Func: func() error {
+				log.Println("inventory: start body reservation")
+				_, err := inventory.ReserveGoods(o.Id, goodIds)
+
+				if err != nil {
+					return err
+				}
+
+				log.Println("inventory: end body reservation.")
+				return nil
+			},
+			Compensation: func() error {
+				log.Println("inventory: cancel body reservation")
+
+				err := inventory.CancelGoodsReservation(o.Id)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		})
+
+		newSaga.AddStep(saga.Step{
+			Name: "reserve courier",
+			Func: func() error {
+				log.Println("shipment: start courier reservation")
+				err := shipment.ReserveCourier(o.Id)
+
+				if err != nil {
+					return err
+				}
+
+				log.Println("shipment: end courier reservation.")
+				return nil
+			},
+			Compensation: func() error {
+				log.Println("shipment: cancel courier reservation")
+
+				err := shipment.CancelCourierReservation(o.Id)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		})
+
+		newSaga.AddStep(saga.Step{
 			Name: "make payment",
 			Func: func() error {
 
@@ -89,57 +136,7 @@ func CreateOrderHandler(service service.Service) func(c *gin.Context) {
 			},
 		})
 
-		s.AddStep(saga.Step{
-			Name: "reserve goods",
-			Func: func() error {
-				log.Println("inventory: start goods reservation")
-				_, err := inventory.ReserveGoods(o.Id, goodIds)
-
-				if err != nil {
-					return err
-				}
-
-				log.Println("inventory: end goods reservation.")
-				return nil
-			},
-			Compensation: func() error {
-				log.Println("inventory: cancel goods reservation")
-
-				err := inventory.CancelGoodsReservation(o.Id)
-				if err != nil {
-					return err
-				}
-
-				return nil
-			},
-		})
-
-		s.AddStep(saga.Step{
-			Name: "reserve courier",
-			Func: func() error {
-				log.Println("shipment: start courier reservation")
-				err := shipment.ReserveCourier(o.Id)
-
-				if err != nil {
-					return err
-				}
-
-				log.Println("shipment: end courier reservation.")
-				return nil
-			},
-			Compensation: func() error {
-				log.Println("shipment: cancel courier reservation")
-
-				err := shipment.CancelCourierReservation(o.Id)
-				if err != nil {
-					return err
-				}
-
-				return nil
-			},
-		})
-
-		coordinator := saga.NewCoordinator(s)
+		coordinator := saga.NewCoordinator(newSaga)
 		err = coordinator.Commit()
 
 		if err != nil {

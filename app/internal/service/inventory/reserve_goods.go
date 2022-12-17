@@ -13,11 +13,11 @@ import (
 )
 
 // ReserveGoods sends request inventory service to reserve goods
-func ReserveGoods(orderId uuid.UUID, goodIds []int) ([]int, error) {
+func ReserveGoods(orderId uuid.UUID, goodIds []uuid.UUID) ([]uuid.UUID, error) {
 	endpoint := fmt.Sprintf("%s/reserveGoods", os.Getenv("INVENTORY_HOST"))
 	data := map[string]interface{}{
-		"order_id": orderId,
-		"good_ids": goodIds,
+		"order_id":  orderId,
+		"goods_ids": goodIds,
 	}
 
 	body, _ := json.Marshal(data)

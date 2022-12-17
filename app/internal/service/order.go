@@ -21,9 +21,8 @@ type Reservations struct {
 }
 
 type Good struct {
-	Id    uuid.UUID `json:"id" gorm:"type:uuid; unique; primary_key;"`
-	Name  string    `json:"name" gorm:"type:string;"`
-	Price int       `json:"price"`
+	ID     uuid.UUID `json:"id"`
+	Amount int       `json:"amount"`
 }
 
 type Order struct {
