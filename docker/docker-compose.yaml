@@ -2,9 +2,9 @@ version: '3'
 services:
   app:
     container_name: app
-    image: 34234247632/order-service:v1.0
+    image: 34234247632/order-service:v2.0
     networks:
-      - otus-msa-hw6
+      - otus-msa-hw8
     restart: always
     entrypoint: /entrypoint.sh
     ports:
@@ -17,7 +17,7 @@ services:
     image: postgres:14.4
     restart: always
     networks:
-      - otus-msa-hw6
+      - otus-msa-hw8
     ports:
       - "5432:5432"
     environment:
@@ -27,4 +27,4 @@ services:
       TZ: 'Europe/Moscow'
 
 networks:
-  otus-msa-hw6:
+  otus-msa-hw8:

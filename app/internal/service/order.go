@@ -1,81 +1,63 @@
 package service
 
 import (
-	"errors"
 	"github.com/google/uuid"
-	"github.com/laterius/service_architecture_hw3/app/internal/domain"
-	"github.com/laterius/service_architecture_hw3/app/internal/repo"
+	"gorm.io/gorm"
 )
 
-var (
-	ErrOrderAlreadyCreated = errors.New("order with this idempotence key is already created")
-	//ErrKeyAlreadyExists    = errors.New("idempotence key is already exist")
-	//success                = false
-	IdempotenceKeys = make(map[string]bool)
-)
-
-type OrderService interface {
-	OrderReader
-	OrderCreator
+type Service struct {
+	db *gorm.DB
 }
 
-func NewOrderService(repo repo.OrderRepo, keyRepo repo.IdempotenceKeyRepo) *orderService {
-	return &orderService{
-		reader:             repo,
-		creator:            repo,
-		idempotenceKeyRepo: keyRepo,
+func NewService(db *gorm.DB) Service {
+	return Service{db: db}
+}
+
+//Реализация методов обращения в базу данных
+
+type Reservations struct {
+	OrderId uuid.UUID `json:"orderId" gorm:"type:uuid; not null"`
+	GoodId  uuid.UUID `json:"goodId" gorm:"type:uuid; not null"`
+}
+
+type Good struct {
+	Id    uuid.UUID `json:"id" gorm:"type:uuid; unique; primary_key;"`
+	Name  string    `json:"name" gorm:"type:string;"`
+	Price int       `json:"price"`
+}
+
+type Order struct {
+	Id uuid.UUID `json:"id" gorm:"type:uuid; unique; primary_key;"`
+}
+
+//type ID struct {
+//	value string
+//}
+//
+//func (v *ID) GetValue() string {
+//	return v.value
+//}
+//
+//func createID() ID {
+//	value := uuid.NewString()
+//
+//	return ID{
+//		value,
+//	}
+//}
+
+// CreateOrder returns new Order
+func (s *Service) CreateOrder() Order {
+	return Order{
+		uuid.New(),
 	}
 }
 
-type orderService struct {
-	reader             repo.OrderReader
-	creator            repo.OrderCreator
-	idempotenceKeyRepo repo.IdempotenceKeyRepo
-}
+func (s *Service) Store(order Order) error {
+	err := s.db.Create(Order{
+		Id: order.Id,
+	}).Error
 
-type OrderReader interface {
-	Get() ([]*domain.Order, error)
-}
-
-type OrderCreator interface {
-	Create(idempotenceKey uuid.UUID, creator *domain.Order) error
-}
-
-func (s *orderService) Get() ([]*domain.Order, error) {
-
-	orders, err := s.reader.Get()
-	if err != nil {
-		if err.Error() == "record not found" {
-			return nil, domain.ErrOrderNotFound
-		}
-	}
-
-	return orders, err
-}
-
-func (s *orderService) Create(idempotenceKey uuid.UUID, order *domain.Order) error {
-
-	key, err := s.idempotenceKeyRepo.Get(idempotenceKey)
-	if err != nil {
-		if err.Error() != "record not found" {
-			return err
-		}
-
-	}
-
-	if key.ID == idempotenceKey {
-		return ErrOrderAlreadyCreated
-	}
-
-	err = s.idempotenceKeyRepo.Create(&domain.IdempotenceKey{
-		ID:     idempotenceKey,
-		Status: domain.OrderStatusCreated,
-	})
-	if err != nil {
-		return err
-	}
-
-	err = s.creator.Create(order)
 	if err != nil {
 		return err
 	}
@@ -83,38 +65,6 @@ func (s *orderService) Create(idempotenceKey uuid.UUID, order *domain.Order) err
 	return nil
 }
 
-type OrderData struct {
-	UserID int `json:"userId" schema:"userId"`
-	Status int `json:"status" schema:"status"`
-	Amount int `json:"amount" schema:"total_amount"`
-}
-
-type Order struct {
-	Id string `json:"id"`
-	OrderData
-}
-
-func (order *Order) FromDomain(d *domain.Order) *Order {
-	order.Id = d.ID.String()
-	order.UserID = d.UserID
-	order.Status = int(d.Status)
-	order.Amount = d.Amount
-
-	return order
-}
-
-func (o *Order) ToDomain() *domain.Order {
-	id, err := uuid.Parse(o.Id)
-	if err != nil {
-		panic(err)
-	}
-
-	order := &domain.Order{
-		ID:     id,
-		UserID: o.UserID,
-		Status: domain.OrderStatus(o.Status),
-		Amount: o.Amount,
-	}
-
-	return order
+func (s *Service) Delete(order Order) error {
+	return s.db.Delete(&Order{}, order.Id).Error
 }

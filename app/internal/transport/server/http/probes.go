@@ -1,13 +1,16 @@
 package http
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
-func RespondOk(ctx *fiber.Ctx) error {
-	return json(ctx, struct {
-		Status string `json:"status"`
-	}{
-		Status: "OK",
-	})
+func RespondOk() func(c *gin.Context) {
+	return func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"success": true,
+			"message": "Good probe",
+			"data":    gin.H{},
+		})
+	}
 }

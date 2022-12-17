@@ -11,13 +11,6 @@ type ErrNotFound struct {
 	error
 }
 
-func NewKv() *Kv {
-	return &Kv{
-		inlay: make(map[string]string),
-		lock:  sync.RWMutex{},
-	}
-}
-
 func (m *Kv) Get(key string) (string, error) {
 	m.lock.RLock()
 	el, found := m.inlay[key]
