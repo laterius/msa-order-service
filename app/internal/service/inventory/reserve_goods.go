@@ -40,7 +40,7 @@ func ReserveGoods(orderId uuid.UUID, goodIds []uuid.UUID) ([]uuid.UUID, error) {
 	}(response.Body)
 
 	if response.StatusCode != http.StatusOK {
-		return nil, errors.New("internal service while reserving goods")
+		return nil, errors.New("internal service while reserving goods ")
 	}
 
 	return goodIds, nil

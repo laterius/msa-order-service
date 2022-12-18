@@ -5,9 +5,9 @@ import (
 	"gorm.io/gorm"
 )
 
-const StorageHost = "http://localhost:8001"
-const DeliveryHost = "http://localhost:8002"
-const PaymentHost = "http://localhost:8003"
+const StorageHost = "http://app-storage:8001"
+const DeliveryHost = "http://app-delivery:8002"
+const PaymentHost = "http://app-payment:8003"
 
 type Service struct {
 	db *gorm.DB
@@ -33,22 +33,6 @@ type Order struct {
 	Id uuid.UUID `json:"id" gorm:"type:uuid; unique; primary_key;"`
 }
 
-//type ID struct {
-//	value string
-//}
-//
-//func (v *ID) GetValue() string {
-//	return v.value
-//}
-//
-//func createID() ID {
-//	value := uuid.NewString()
-//
-//	return ID{
-//		value,
-//	}
-//}
-
 // CreateOrder returns new Order
 func (s *Service) CreateOrder() Order {
 	return Order{
@@ -70,4 +54,9 @@ func (s *Service) Store(order Order) error {
 
 func (s *Service) Delete(order Order) error {
 	return s.db.Delete(&Order{}, order.Id).Error
+}
+
+func (s *Service) Get(orderId uuid.UUID) (order *Order, err error) {
+	err = s.db.Model(order).Where(orderId).First(&order).Error
+	return
 }

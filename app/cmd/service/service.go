@@ -37,6 +37,7 @@ func main() {
 
 	//Handlers
 	server.POST("/order", api.CreateOrderHandler(newService))
+	server.GET("/order/:orderId", api.GetOrderHandler(newService))
 	server.GET("/probe/live", transport.RespondOk())
 	server.GET("/probe/ready", transport.RespondOk())
 
