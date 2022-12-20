@@ -5,9 +5,9 @@ import (
 	"gorm.io/gorm"
 )
 
-const StorageHost = "http://app-storage:8001"
-const DeliveryHost = "http://app-delivery:8002"
-const PaymentHost = "http://app-payment:8003"
+const StorageHost = "http://storage-service"
+const DeliveryHost = "http://delivery-service"
+const PaymentHost = "http://payment-service"
 
 type Service struct {
 	db *gorm.DB

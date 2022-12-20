@@ -2,7 +2,7 @@ version: '3'
 services:
   app-order:
     container_name: app-order
-    image: 34234247632/order-service:v2.0
+    image: 34234247632/order-service:v2.2
     networks:
       - otus-msa-hw8
     restart: always

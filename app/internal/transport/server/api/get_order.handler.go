@@ -9,10 +9,6 @@ import (
 
 // GetOrderHandler handles request to get order by ID
 func GetOrderHandler(service s.Service) func(c *gin.Context) {
-	type Body struct {
-		Goods []s.Good
-	}
-
 	return func(c *gin.Context) {
 
 		id := c.Param("orderId")
