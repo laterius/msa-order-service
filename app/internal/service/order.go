@@ -5,6 +5,8 @@ import (
 	"gorm.io/gorm"
 )
 
+const BillingHost = "http://billing-service"
+const NotificationHost = "http://notification-service"
 const StorageHost = "http://storage-service"
 const DeliveryHost = "http://delivery-service"
 const PaymentHost = "http://payment-service"

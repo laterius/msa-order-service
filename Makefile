@@ -1,8 +1,8 @@
 build:
-	docker build -f docker/Dockerfile . -t 34234247632/order-service:v2.2
+	docker build -f docker/Dockerfile . -t 34234247632/order-service:v3.3
 
 push:
-	docker push 34234247632/order-service:v2.2
+	docker push 34234247632/order-service:v3.3
 
 docker-start:
 	cd docker && docker-compose up -d
