@@ -33,7 +33,7 @@ func CreateOrderHandlerV2() func(c *gin.Context) {
 
 		orderId := uuid.New()
 		status := changeBalance(orderId, req, c)
-		status = sendNotification(orderId, status, c)
+		sendNotification(orderId, status, c)
 
 		if status {
 			c.JSON(http.StatusOK, gin.H{
@@ -47,7 +47,7 @@ func CreateOrderHandlerV2() func(c *gin.Context) {
 	}
 }
 
-func sendNotification(orderId uuid.UUID, status bool, c *gin.Context) bool {
+func sendNotification(orderId uuid.UUID, status bool, c *gin.Context) {
 	endpoint := fmt.Sprintf("%s/send", s.NotificationHost)
 	data := map[string]interface{}{
 		"order_id": orderId,
@@ -67,7 +67,6 @@ func sendNotification(orderId uuid.UUID, status bool, c *gin.Context) bool {
 			"message": fmt.Sprintf("Problem with send status from order. Error = %s", err.Error()),
 			"data":    gin.H{},
 		})
-		return false
 	}
 
 	defer func(Body io.ReadCloser) {
@@ -83,9 +82,7 @@ func sendNotification(orderId uuid.UUID, status bool, c *gin.Context) bool {
 			"message": fmt.Sprintf("Problem with send status from order. Status = %v", response.Status),
 			"data":    gin.H{},
 		})
-		return false
 	}
-	return true
 }
 
 func changeBalance(orderId uuid.UUID, req Body, c *gin.Context) bool {
